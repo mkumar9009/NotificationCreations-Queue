@@ -15,6 +15,17 @@
 
 	<form method='post' action=""/>
 	{% csrf_token %}
+
+		{% if form.errors %}
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <div class="alert alert-error">
+                    <strong style="color:red;">{{ field.name }} - {{ error|escape }}</strong>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        {% endif %}
+
 		<div class="form-group">
 			<label class="col-sm-2">User Type</label>
 			{{form.user_type}}
@@ -22,13 +33,13 @@
 
 		<div class="form-group">
 			<label class="col-sm-2">Notification Content</label>
-			{{form.content}}
+			<input type="text" name="content" minlength="20" maxlength="300" required />
 		</div>
 
 		<div class="form-group">
 			<label class="col-sm-2">Notification Delivery Time</label>
 			<div class='col-xs-4 input-group date'>
-			    <input type="text" name="deliver_time" class="form-control datepicker" />
+			    <input type="text" name="deliver_time" class="form-control datepicker" required />
 			    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
 			    </span>
 		</div>
