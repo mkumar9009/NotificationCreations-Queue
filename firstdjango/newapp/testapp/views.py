@@ -9,6 +9,7 @@ def index(request):
 	#execute below instructions when we are receiving the form data from user	
 	if request.method == 'POST':
 		form = NotificationsForm(request.POST)
+		#call send notification only if the form is valid and those type of users are there in database
 		if form.is_valid():
 			payload = form.save()
 			users_to_send_notification = Users.objects.filter(user_type=payload.user_type)
@@ -21,7 +22,7 @@ def index(request):
 				if response:
 					return HttpResponse("Notifications send in queue")
 				else:
-					return HttpResponse("Notification could not be enqueued Please check system")
+					return HttpResponse("Notification could not be enqueued Please check with System Administrator")
 
 			else:
 				return HttpResponse("No User found to send notification")	
