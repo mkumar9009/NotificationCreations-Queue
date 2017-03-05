@@ -16,8 +16,15 @@ def index(request):
 				"content": payload.content,
 				"notification_time": payload.deliver_time
 			}
-			send_notification_to_users(users_to_send_notification, base_notification_payload)
-			return HttpResponse("Notifications send in queue")			
+			if users_to_send_notification:
+				response = send_notification_to_users(users_to_send_notification, base_notification_payload)
+				if response:
+					return HttpResponse("Notifications send in queue")
+				else:
+					return HttpResponse("Notification could not be enqueued Please check system")
+
+			else:
+				return HttpResponse("No User found to send notification")	
 				
 	ctx = {
 		'form':form
@@ -35,5 +42,9 @@ def send_notification_to_users(users_to_send_notification, base_notification_pay
 			"image_url": user.user_img.url
 		})
 		#calling the send_notification function which is scheduled at the deliver time entered by the user
-		send_notification.apply_async((user.id,notification_payload),eta=base_notification_payload["notification_time"])
-	return HttpResponse("Notifcation added in the queue")
+		try:
+			send_notification.apply_async((user.id,notification_payload),eta=base_notification_payload["notification_time"])
+		except:
+			return False	
+
+	return True
